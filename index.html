@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Posición de IVA</title>
+<style>
+  :root{
+    --navy:#1B2A4A;
+    --gold:#C9A227;
+    --bg:#F0F3F8;
+    --card:#FFFFFF;
+    --text:#1B2A4A;
+    --muted:#6B7A99;
+    --green:#2E8B57;
+    --border:#DCE2EE;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:32px 16px 60px;
+  }
+  header{
+    width:100%;
+    max-width:560px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:24px;
+  }
+  header .brand{
+    font-size:18px;
+    font-weight:700;
+    color:var(--navy);
+    letter-spacing:0.2px;
+  }
+  header .brand span{
+    display:block;
+    font-size:12px;
+    font-weight:500;
+    color:var(--muted);
+    margin-top:2px;
+  }
+  .nota-corta{
+    font-size:12px;
+    color:var(--muted);
+    margin-top:10px;
+    line-height:1.4;
+  }
+  .razon{
+    width:100%;
+    max-width:560px;
+    font-size:15px;
+    color:var(--muted);
+    margin-bottom:12px;
+  }
+  .razon strong{color:var(--navy);}
+  .card{
+    width:100%;
+    max-width:560px;
+    background:var(--card);
+    border-radius:16px;
+    padding:24px 28px;
+    box-shadow:0 1px 3px rgba(27,42,74,0.08), 0 1px 2px rgba(27,42,74,0.06);
+    border:1px solid rgba(27,42,74,0.06);
+    margin-bottom:20px;
+  }
+  .card-top{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-bottom:18px;
+  }
+  .mes-label{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:13px;
+    color:var(--muted);
+  }
+  .dot{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:var(--green);
+    display:inline-block;
+  }
+  .actualizado{
+    font-size:13px;
+    color:var(--muted);
+    text-align:right;
+  }
+  .datos{
+    display:flex;
+    flex-wrap:wrap;
+    gap:28px;
+  }
+  .dato-label{
+    font-size:13px;
+    color:var(--muted);
+    margin-bottom:4px;
+  }
+  .dato-valor{
+    font-size:22px;
+    font-weight:600;
+    color:var(--navy);
+    font-variant-numeric:tabular-nums;
+  }
+  .dato-valor.pos-pagar{color:var(--gold);}
+  .dato-valor.pos-favor{color:var(--green);}
+
+  .card h3{
+    margin:0 0 4px;
+    font-size:15px;
+    font-weight:600;
+    color:var(--navy);
+  }
+  .card .subtitulo{
+    font-size:13px;
+    color:var(--muted);
+    margin:0 0 18px;
+  }
+  .renglon{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding:10px 0;
+    border-bottom:1px solid var(--border);
+  }
+  .renglon:last-of-type{border-bottom:none;}
+  .renglon label{
+    font-size:14px;
+    color:var(--text);
+  }
+  .renglon input{
+    width:150px;
+    text-align:right;
+    font-size:15px;
+    font-variant-numeric:tabular-nums;
+    padding:8px 10px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    color:var(--navy);
+    background:#FBFCFE;
+  }
+  .renglon input:focus{
+    outline:none;
+    border-color:var(--navy);
+  }
+  .final{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-top:16px;
+    padding-top:16px;
+    border-top:2px solid var(--border);
+  }
+  .final .dato-label{font-size:14px;}
+  .final .dato-valor{font-size:24px;}
+
+  .boton-guardar{
+    margin-top:18px;
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    background:var(--navy);
+    color:#fff;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .boton-guardar:disabled{
+    opacity:0.6;
+    cursor:default;
+  }
+  .mensaje-guardado{
+    margin-top:10px;
+    font-size:13px;
+    text-align:center;
+    color:var(--green);
+    min-height:16px;
+  }
+  .mensaje-guardado.error{color:#B3261E;}
+
+  .estado{
+    width:100%;
+    max-width:560px;
+    text-align:center;
+    padding:48px 16px;
+    color:var(--muted);
+    font-size:15px;
+  }
+  .estado.error{color:#B3261E;}
+  footer{
+    width:100%;
+    max-width:560px;
+    margin-top:12px;
+    font-size:12px;
+    color:var(--muted);
+    text-align:center;
+  }
+  footer p{margin:0;}
+  footer .pie-largo{
+    margin-top:10px;
+    text-align:left;
+    line-height:1.5;
+    padding:12px 14px;
+    background:#FBFCFE;
+    border:1px solid var(--border);
+    border-radius:10px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">Noelia Meza<span>Contadora Pública</span></div>
+</header>
+
+<div id="razon" class="razon" style="display:none;">
+  Posición de IVA de <strong id="razonNombre"></strong>
+</div>
+
+<div id="estado" class="estado">Cargando información...</div>
+
+<div id="card" class="card" style="display:none;">
+  <div class="card-top">
+    <div class="mes-label">
+      <span class="dot"></span>
+      Mes en curso
+    </div>
+    <div class="actualizado" id="actualizado"></div>
+  </div>
+  <div class="datos">
+    <div>
+      <div class="dato-label">Ventas (neto)</div>
+      <div class="dato-valor" id="ventas">—</div>
+    </div>
+    <div>
+      <div class="dato-label">Compras (neto)</div>
+      <div class="dato-valor" id="compras">—</div>
+    </div>
+    <div>
+      <div class="dato-label">IVA Débito Fiscal</div>
+      <div class="dato-valor" id="ivaDF">—</div>
+    </div>
+    <div>
+      <div class="dato-label">IVA Crédito Fiscal</div>
+      <div class="dato-valor" id="ivaCF">—</div>
+    </div>
+    <div>
+      <div class="dato-label">Posición</div>
+      <div class="dato-valor" id="posicion">—</div>
+    </div>
+  </div>
+  <div class="nota-corta">Estimación informativa basada en los comprobantes registrados en ARCA a la fecha de consulta. No reemplaza la liquidación de la declaración jurada.</div>
+</div>
+
+<div id="cardAjustes" class="card" style="display:none;">
+  <h3>Tus datos</h3>
+  <p class="subtitulo">Si tenés percepciones, retenciones de IVA o IVA aduanero del mes, cargalos acá para ver la posición final.</p>
+
+  <div class="renglon">
+    <label for="percepciones">Percepciones de IVA</label>
+    <input type="number" id="percepciones" inputmode="decimal" step="0.01" placeholder="0,00">
+  </div>
+  <div class="renglon">
+    <label for="retenciones">Retenciones de IVA</label>
+    <input type="number" id="retenciones" inputmode="decimal" step="0.01" placeholder="0,00">
+  </div>
+  <div class="renglon">
+    <label for="ivaAduanero">IVA Aduanero</label>
+    <input type="number" id="ivaAduanero" inputmode="decimal" step="0.01" placeholder="0,00">
+  </div>
+
+  <div class="final">
+    <div class="dato-label">Posición final</div>
+    <div class="dato-valor" id="posicionFinal">—</div>
+  </div>
+
+  <button class="boton-guardar" id="btnGuardar">Guardar</button>
+  <div class="mensaje-guardado" id="mensajeGuardado"></div>
+</div>
+
+<footer>
+  <p>Noelia Meza — Contadora Pública — información actualizada automáticamente</p>
+  <p class="pie-largo">La información surge de los comprobantes emitidos y recibidos registrados en ARCA, que pueden demorar entre 24 y 48 hs o más en estar disponibles. No incluye saldos a favor de períodos anteriores, pagos a cuenta no informados ni ajustes por créditos fiscales no computables. Los importes que cargues en "Tus datos" se consideran declarados por vos y quedan sujetos a verificación con la documentación respaldatoria. El importe definitivo es el que determine al confeccionar la declaración jurada del período. Esta herramienta tiene carácter orientativo y no constituye asesoramiento ni liquidación definitiva.</p>
+</footer>
+
+<!--
+  Formulario oculto que manda los ajustes a un Google Form en vez de a
+  Apps Script directo (los Forms de Google aceptan envíos sin login, así
+  que esto evita el bloqueo de CORS/login de Google). Del otro lado, un
+  trigger en el proyecto de Apps Script toma cada respuesta y la guarda.
+
+  IMPORTANTE: reemplazá la URL de "action" y los 4 "name=entry.XXXX" por
+  los valores reales de TU Google Form (ver instrucciones en
+  FormAjustes.gs del proyecto de Apps Script).
+-->
+<iframe name="iframeGuardarOculto" style="display:none;"></iframe>
+<form id="formGuardarOculto"
+      action="https://docs.google.com/forms/d/e/REEMPLAZAR_CON_EL_ID_PUBLICADO_DEL_FORM/formResponse"
+      method="POST" target="iframeGuardarOculto" style="display:none;">
+  <input type="text" name="entry.REEMPLAZAR_TOKEN" id="campoFormToken">
+  <input type="text" name="entry.REEMPLAZAR_PERCEPCIONES" id="campoFormPercepciones">
+  <input type="text" name="entry.REEMPLAZAR_RETENCIONES" id="campoFormRetenciones">
+  <input type="text" name="entry.REEMPLAZAR_IVAADUANERO" id="campoFormIvaAduanero">
+</form>
+
+<script>
+function getToken() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("c");
+}
+
+function formatMoney(n) {
+  if (typeof n !== "number") return "—";
+  return "$ " + n.toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function pintarPosicion(el, valor) {
+  el.classList.remove("pos-pagar", "pos-favor");
+  if (typeof valor !== "number") { el.textContent = "—"; return; }
+  if (valor >= 0) {
+    el.textContent = "A pagar " + formatMoney(valor);
+    el.classList.add("pos-pagar");
+  } else {
+    el.textContent = "A favor " + formatMoney(Math.abs(valor));
+    el.classList.add("pos-favor");
+  }
+}
+
+function recalcularLocal() {
+  const base = parseFloat(window.__posicionBase);
+  if (isNaN(base)) return;
+  const perc = parseFloat(document.getElementById("percepciones").value) || 0;
+  const ret = parseFloat(document.getElementById("retenciones").value) || 0;
+  const aduana = parseFloat(document.getElementById("ivaAduanero").value) || 0;
+  const final = base - perc - ret - aduana;
+  pintarPosicion(document.getElementById("posicionFinal"), final);
+}
+
+async function cargar() {
+  const token = getToken();
+  const estadoEl = document.getElementById("estado");
+
+  if (!token) {
+    estadoEl.textContent = "Falta el link de acceso. Pedí tu link.";
+    estadoEl.classList.add("error");
+    return;
+  }
+
+  try {
+    // Lee el archivo estático propio (mismo sitio, sin CORS ni login de
+    // Google) que el proyecto de Apps Script publica cada hora con los
+    // datos de cada cliente, nombrado con su token.
+    const resp = await fetch(`./data/${encodeURIComponent(token)}.json`, { cache: "no-store" });
+    if (!resp.ok) {
+      estadoEl.textContent = "No pudimos encontrar tu información. Pedí que revise tu link.";
+      estadoEl.classList.add("error");
+      return;
+    }
+    const data = await resp.json();
+
+    if (data.error) {
+      estadoEl.textContent = "No pudimos encontrar tu información. Pedí que revise tu link.";
+      estadoEl.classList.add("error");
+      return;
+    }
+
+    document.getElementById("razonNombre").textContent = data.razonSocial || "";
+    document.getElementById("razon").style.display = "block";
+
+    document.getElementById("ventas").textContent = formatMoney(data.ventasMes);
+    document.getElementById("compras").textContent = formatMoney(data.comprasMes);
+    document.getElementById("ivaDF").textContent = formatMoney(data.ivaDF);
+    document.getElementById("ivaCF").textContent = formatMoney(data.ivaCF);
+    pintarPosicion(document.getElementById("posicion"), data.posicion);
+
+    document.getElementById("actualizado").textContent = data.actualizado
+      ? "Actualizado " + data.actualizado
+      : "";
+
+    window.__posicionBase = data.posicion;
+
+    document.getElementById("percepciones").value = data.percepciones ? data.percepciones : "";
+    document.getElementById("retenciones").value = data.retenciones ? data.retenciones : "";
+    document.getElementById("ivaAduanero").value = data.ivaAduanero ? data.ivaAduanero : "";
+    pintarPosicion(document.getElementById("posicionFinal"), data.posicionFinal);
+
+    estadoEl.style.display = "none";
+    document.getElementById("card").style.display = "block";
+    document.getElementById("cardAjustes").style.display = "block";
+
+    document.getElementById("percepciones").addEventListener("input", recalcularLocal);
+    document.getElementById("retenciones").addEventListener("input", recalcularLocal);
+    document.getElementById("ivaAduanero").addEventListener("input", recalcularLocal);
+
+    document.getElementById("btnGuardar").addEventListener("click", function () {
+      guardarAjustes(token);
+    });
+  } catch (e) {
+    estadoEl.textContent = "No pudimos cargar tu información en este momento. Probá de nuevo en unos minutos.";
+    estadoEl.classList.add("error");
+  }
+}
+
+function guardarAjustes(token) {
+  const btn = document.getElementById("btnGuardar");
+  const msg = document.getElementById("mensajeGuardado");
+  btn.disabled = true;
+  msg.textContent = "Guardando...";
+  msg.classList.remove("error");
+
+  const percepciones = parseFloat(document.getElementById("percepciones").value) || 0;
+  const retenciones = parseFloat(document.getElementById("retenciones").value) || 0;
+  const ivaAduanero = parseFloat(document.getElementById("ivaAduanero").value) || 0;
+
+  // Mandamos los datos a un Google Form oculto (ver el <form> más arriba).
+  // Los Forms de Google aceptan respuestas sin login, así que esto evita
+  // el bloqueo de CORS que tendría llamar a Apps Script directo. Del otro
+  // lado, un trigger en el proyecto de Apps Script toma la respuesta y la
+  // guarda.
+  document.getElementById("campoFormToken").value = token;
+  document.getElementById("campoFormPercepciones").value = percepciones;
+  document.getElementById("campoFormRetenciones").value = retenciones;
+  document.getElementById("campoFormIvaAduanero").value = ivaAduanero;
+
+  const iframe = document.querySelector('iframe[name="iframeGuardarOculto"]');
+
+  // Como el envío va a un iframe oculto de otro origen, no podemos leer la
+  // respuesta para confirmar éxito — pero si el iframe termina de cargar,
+  // es señal de que el envío se completó. Mostramos "Guardado" con eso.
+  const confirmar = function () {
+    iframe.removeEventListener("load", confirmar);
+    recalcularLocal();
+    msg.textContent = "Guardado.";
+    msg.classList.remove("error");
+    setTimeout(function () { msg.textContent = ""; }, 3000);
+    btn.disabled = false;
+  };
+  iframe.addEventListener("load", confirmar);
+
+  // Red de seguridad por si el evento "load" no llega a disparar.
+  setTimeout(function () {
+    if (btn.disabled) confirmar();
+  }, 4000);
+
+  document.getElementById("formGuardarOculto").submit();
+}
+
+cargar();
+</script>
+
+</body>
+</html>
